@@ -1,0 +1,8 @@
+c = int(input())
+a = int(input())
+b = int(input())
+area = float(c * ((a + b)/2))
+print(f"Height: {c}")
+print(f"Base, first value: {a}")
+print(f"Base, second value: {b}")
+print(f"Area of trapezoid: {area}")
