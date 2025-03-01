@@ -1,4 +1,4 @@
-file_name = '/Users/esrarustemoglu/Desktop/Labs/Lab06/dir-and-files/d.txt'
+file_name = '/Users/esrarustemoglu/Desktop/Labs/Lab06/dir-and-files/d_1.txt'
 line_count = 0
 with open (file_name, 'w')as file:
     file.write("hello \neveryone \n123 \nabc")
