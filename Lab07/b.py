@@ -4,9 +4,9 @@ pygame.mixer.init()
 
 screen = pygame.display.set_mode((400, 300))
 songs = [
-    "Downloads/Sezen-Aksu-Kacin-Kurasi.mp3",
-    "Downloads/Sezen-Aksu-Asktan-Ne-Haber.mp3",
-    "Downloads/Sezen-Aksu-Aldatildik.mp3"
+    "/Users/esrarustemoglu/Sezen-Aksu-Kacin-Kurasi.mp3",
+    "/Users/esrarustemoglu/Sezen-Aksu-Asktan-Ne-Haber.mp3",
+    "/Users/esrarustemoglu/Sezen-Aksu-Aldatildik.mp3"
 ]
 track = 0
 paused = False

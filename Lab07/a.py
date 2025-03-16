@@ -4,12 +4,11 @@ from datetime import datetime
 pygame.init()
 
 screen = pygame.display.set_mode((800, 600))
-pygame.display.set_caption("Mickey Mouse Clock")
 clock = pygame.time.Clock()
 
-clock_surf = pygame.image.load("Downloads/clock.png").convert()
-sec_hand_surf = pygame.image.load("Downloads/sec_hand.png").convert_alpha()
-min_hand_surf = pygame.image.load("Downloads/min_hand.png").convert_alpha()
+clock_surf = pygame.image.load("/Users/esrarustemoglu/clock.png").convert()
+sec_hand_surf = pygame.image.load("/Users/esrarustemoglu/sec_hand.png").convert_alpha()
+min_hand_surf = pygame.image.load("/Users/esrarustemoglu/min_hand.png").convert_alpha()
 
 def blitRotateCenter(surf, image, pivot, angle):
     rotated_image = pygame.transform.rotate(image, angle)
