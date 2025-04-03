@@ -1,46 +1,49 @@
 import pygame
-import random
+import sys
+from random import randint
 
 pygame.init()
-colorWHITE = (255, 255, 255)
-colorGRAY = (200, 200, 200)
-colorBLACK = (0, 0, 0)
-colorRED = (255, 0, 0)
-colorGREEN = (0, 255, 0)
-colorBLUE = (0, 0, 255)
-colorYELLOW = (255, 255, 0)
 
-WIDTH = 600
-HEIGHT = 600
-CELL = 30
-FPS = 5
+Black = pygame.Color(0, 0, 0)
+White = pygame.Color(255, 255, 255)
+Grey = pygame.Color(128, 128, 128)
+Red = pygame.Color(255, 0, 0)
+Blue = pygame.Color(0, 0, 255)
+Green = pygame.Color(0, 255, 0)
+Yellow = (255, 255, 0)
 
+Width = 600
+Height = 600
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Snake Game")
+DISPLAYSURF = pygame.display.set_mode((Width, Height))
 
-
-font = pygame.font.SysFont("Verdana", 20)
-
-
-score = 0
-level = 1
+Cell = 30
 
 def draw_grid():
-    for i in range(HEIGHT // CELL):
-        for j in range(WIDTH // CELL):
-            pygame.draw.rect(screen, colorGRAY, (i * CELL, j * CELL, CELL, CELL), 1)
+    for i in range(Height -3  // Cell):
+        for j in range(Width - 3 // Cell ):
+            pygame.draw.rect(DISPLAYSURF, Grey, (i * Cell , j * Cell , Cell , Cell ), 1)
 
 def draw_grid_chess():
-    colors = [colorWHITE, colorGRAY]
-    for i in range(HEIGHT // CELL):
-        for j in range(WIDTH // CELL):
-            pygame.draw.rect(screen, colors[(i + j) % 2], (i * CELL, j * CELL, CELL, CELL))
+    colors = [White, Grey]
+    for i in range(Height - 3 // Cell ):
+        for j in range(Width - 3 // Cell):
+            pygame.draw.rect(DISPLAYSURF, colors[(i + j) % 2], (i * Cell , j * Cell , Cell , Cell ))
+
+
+def draw_borders():
+    pygame.draw.rect(DISPLAYSURF, Red, (0, 0, 3, Height))  # Left border (filled)
+    pygame.draw.rect(DISPLAYSURF, Red, (Width - 3, 0, 3, Height))  # Right border (filled)
+    pygame.draw.rect(DISPLAYSURF, Red, (0, 0, Width, 3))  # Top border (filled)
+    pygame.draw.rect(DISPLAYSURF, Red, (0, Height - 3, Width, 3))  # Bottom border (filled)
 
 class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def __str__(self):
+        return f"{self.x}, {self.y}"
 
 class Snake:
     def __init__(self):
@@ -49,7 +52,6 @@ class Snake:
         self.dy = 0
 
     def move(self):
-        global running
         for i in range(len(self.body) - 1, 0, -1):
             self.body[i].x = self.body[i - 1].x
             self.body[i].y = self.body[i - 1].y
@@ -57,77 +59,81 @@ class Snake:
         self.body[0].x += self.dx
         self.body[0].y += self.dy
 
-        if self.body[0].x < 0 or self.body[0].x >= WIDTH // CELL or self.body[0].y < 0 or self.body[0].y >= HEIGHT // CELL:
-            running = False  
+        # checks the right border
+        if self.body[0].x > Width // Cell - 1:
+            self.body[0].x = 0
+        # checks the left border
+        if self.body[0].x < 0:
+            self.body[0].x = Width // Cell - 1
+        # checks the bottom border
+        if self.body[0].y > Height // Cell - 1:
+            self.body[0].y = 0
+        # checks the top border
+        if self.body[0].y < 0:
+            self.body[0].y = Height // Cell - 1
+
 
     def draw(self):
         head = self.body[0]
-        pygame.draw.rect(screen, colorRED, (head.x * CELL, head.y * CELL, CELL, CELL))
+        pygame.draw.rect(DISPLAYSURF, Red, (head.x * Cell, head.y * Cell, Cell, Cell))
         for segment in self.body[1:]:
-            pygame.draw.rect(screen, colorYELLOW, (segment.x * CELL, segment.y * CELL, CELL, CELL))
+            pygame.draw.rect(DISPLAYSURF, Yellow, (segment.x * Cell, segment.y * Cell, Cell, Cell))
 
     def check_collision(self, food):
-        global score, level, FPS
-        
         head = self.body[0]
         if head.x == food.pos.x and head.y == food.pos.y:
-            score += 1
+            print("Got food!")
             self.body.append(Point(head.x, head.y))
-            food.generate_random_pos(self)
-            if score % 3 == 0:
-                level += 1
-                FPS += 1
+            food.generate_random_pos()
 
 class Food:
     def __init__(self):
         self.pos = Point(9, 9)
 
     def draw(self):
-        pygame.draw.rect(screen, colorGREEN, (self.pos.x * CELL, self.pos.y * CELL, CELL, CELL))
+        pygame.draw.rect(DISPLAYSURF, Green , (self.pos.x * Cell , self.pos.y * Cell , Cell , Cell))
 
-    def generate_random_pos(self, snake):
-        while True:
-            new_x = random.randint(0, WIDTH // CELL - 1)
-            new_y = random.randint(0, HEIGHT // CELL - 1)
-            if not any(segment.x == new_x and segment.y == new_y for segment in snake.body):
-                self.pos.x = new_x
-                self.pos.y = new_y
-                break
+    def generate_random_pos(self):
+        self.pos.x = randint(0, Width // Cell - 1)
+        self.pos.y = randint(0, Height // Cell - 1)
 
+
+FPS = 5
 clock = pygame.time.Clock()
+
 food = Food()
 snake = Snake()
-running = True
 
+running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT and snake.dx == 0:
+            if event.key == pygame.K_RIGHT:
                 snake.dx = 1
                 snake.dy = 0
-            elif event.key == pygame.K_LEFT and snake.dx == 0:
+            elif event.key == pygame.K_LEFT:
                 snake.dx = -1
                 snake.dy = 0
-            elif event.key == pygame.K_DOWN and snake.dy == 0:
+            elif event.key == pygame.K_DOWN:
                 snake.dx = 0
                 snake.dy = 1
-            elif event.key == pygame.K_UP and snake.dy == 0:
+            elif event.key == pygame.K_UP:
                 snake.dx = 0
                 snake.dy = -1
 
-    screen.fill(colorBLACK)
+    DISPLAYSURF.fill(Black)
+    
     draw_grid()
     draw_grid_chess()
+    draw_borders()
+    
     snake.move()
     snake.check_collision(food)
 
     snake.draw()
     food.draw()
-
-    score_surf = font.render(f"Score: {score}  Level: {level}", True, colorBLACK)
-    screen.blit(score_surf, (10, 10))
 
     pygame.display.flip()
     clock.tick(FPS)
